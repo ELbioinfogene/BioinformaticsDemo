@@ -1,5 +1,5 @@
 # BioinformaticsDemo
-Script using Biopython functions to analyze SARSCOV2 genomes
+Independent study from a uDemy bioniformatics course, this script uses Biopython functions to analyze SARSCOV2 genomes
 
 With Biopython dependences some 'general use' functions are defined here: Protein_Estimator() and CODON_READER() - which can create potential amino acids sequences from any given nucleotide sequence.
 
