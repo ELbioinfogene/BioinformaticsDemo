@@ -8,21 +8,31 @@ from Bio.Seq import Seq
 from Bio.SeqUtils import nt_search
 from Bio import pairwise2
 
-#load canonical COVID19 genome
-#Source:
-#https://www.ncbi.nlm.nih.gov/nuccore/MN908947
+#load genomes from FASTA files
+#load canonical COVID genome
 CN_COVID_record = SeqIO.read('biopythonSARSCOV2.fasta', 'fasta')
 CN_COVID_NT = CN_COVID_record.seq
 #isolate spike gene
-CN_SPIKE_GENE = CN_COVID_NT[21500:25400]
+CN_SPIKE_GENE = CN_COVID_NT[21000:26000]
 
 #load 'DELTA'
-#Source:
-#https://www.ncbi.nlm.nih.gov/nuccore/MZ577519.1/
 LA_COVID_record = SeqIO.read('biopythonSARSCOV2DELTAV.fasta', 'fasta')
 LA_COVID_NT = LA_COVID_record.seq
 #isolate spike gene
-LA_SPIKE_GENE = LA_COVID_NT[21500:25400]
+LA_SPIKE_GENE = LA_COVID_NT[21000:26000]
+
+#load 'Mu' - Florida sample
+FL_COVID_record = SeqIO.read('biopythonSARSCOV2MaybeMuV.fasta', 'fasta')
+FL_COVID_NT = FL_COVID_record.seq
+#isolate spike gene
+FL_SPIKE_GENE = FL_COVID_NT[21000:26000]
+
+#load 'OMICRON' - Belgium sample
+OM_COVID_record = SeqIO.read('biopythonSARSCOV2OMICRON.fasta', 'fasta')
+OM_COVID_NT = OM_COVID_record.seq
+#isolate spike gene - wider window!
+OM_SPIKE_GENE = OM_COVID_NT[21000:26000]
+#end File Loading
 
 #FUNCTIONS:
 #returns the length of a sequence (needed to sort list by seq length)
@@ -148,30 +158,41 @@ def DISPLAY_PROTEIN_COMPARISON(PROT_LIST,DISPLAY_INDEX,NAME_SET,ALIGNMENT_TYPE):
     print(f'Protein {PROTEIN_A_NAME} is {PROTEIN_A_LENGTH} amino acids long.\n')
     print(f'Protein {PROTEIN_B_NAME} is {PROTEIN_B_LENGTH} amino acids long.\n')
     print(f'{PROTEIN_A_NAME} and {PROTEIN_B_NAME} have {SEQUENCE_IDENTITY_SCORE}% sequence identity in a {ALIGNMENT_TYPE} alignment\n')
-    return
 
-#CALLING THE FUNCTIONS - 7/31 first run
+def VAX_DRIFT_REPORT(VAX_SPIKE,QUERY_SPIKE,QUERY_NAME,SIG_FIGS):
+    #which is longer?
+    V_SIZE = len(VAX_SPIKE)
+    Q_SIZE = len(QUERY_SPIKE)
+    if V_SIZE>Q_SIZE:
+        SIZE_NORM = V_SIZE
+    if Q_SIZE>V_SIZE:
+        SIZE_NORM = Q_SIZE
+    if Q_SIZE==V_SIZE:
+        SIZE_NORM = V_SIZE
+    PAIRWISE_SCORE = pairwise2.align.globalxx(VAX_SPIKE,QUERY_SPIKE,one_alignment_only=True,score_only=True)
+    IDENTITY_PERCENT = (PAIRWISE_SCORE/SIZE_NORM)*100
+    ROUND_OFF_PERCENT = round(IDENTITY_PERCENT,SIG_FIGS)
+    print(f'The Pfizer mRNA spike protein is {ROUND_OFF_PERCENT}% identical to {QUERY_NAME} variant spike protein')
+    print('***\n')
 
+#END OF FUNCTIONS
+
+#Function Execution
 #Make Lists of Potential Proteins
 CN_PROTEINS = Protein_Estimator(CN_SPIKE_GENE)
 LA_PROTEINS = Protein_Estimator(LA_SPIKE_GENE)
-
-#8/11 are any the same?
-CN_PROT_SET = set(CN_PROTEINS)
-LA_PROT_SET = set(LA_PROTEINS)
-CN_V_LA_CONSERVED = list(CN_PROT_SET.intersection(LA_PROT_SET))
-#8/11 answer: 56 short transcripts!
-#8/11 BLASTed 5 of these shorts
-#and only 1 had a partial hit with SARSCOV2, others gave 0 hits
-
-#7/31 Outside research (NIH web BLAST of strings in DELTA_LIST when cull_n==4)
-#NIH canonical spike protein is YP_009724390.1
-#as of 7/31 this corresponds to DELTA_LIST[10] when cull_n==100
-
+FL_PROTEINS = Protein_Estimator(FL_SPIKE_GENE)
+OM_PROTEINS = Protein_Estimator(OM_SPIKE_GENE)
 #Compare unique proteins of similar length - allows user to select a cull threshold
 DELTA_LIST = PROTEIN_COMPARER(CN_PROTEINS,LA_PROTEINS,100)
+MU_LIST = PROTEIN_COMPARER(CN_PROTEINS,FL_PROTEINS,100)
+OM_LIST = PROTEIN_COMPARER(CN_PROTEINS,OM_PROTEINS,100)
 
-#BONUS: ANALYZE VAX
+#perform display function for delta variant result
+DISPLAY_PROTEIN_COMPARISON(DELTA_LIST,10,['COVID19 ALPHA SPIKE','COVID19 DELTA SPIKE'],'global')
+print('***\n')
+
+#Analyze VAX target mutations
 #Pfizer Sequence from WHO
 #Source: https://berthub.eu/articles/posts/reverse-engineering-source-code-of-the-biontech-pfizer-vaccine/
 #used microsoft word to isolate the bolded reading frame, remove numbers and spaces, converted greek special base to Uracil for ease of use
@@ -184,22 +205,14 @@ CN_SPIKE_CANON = DELTA_LIST[10]['SEQA']
 CN_AA_SIZE = len(CN_SPIKE_CANON)
 LA_SPIKE_CANON = DELTA_LIST[10]['SEQB']
 LA_AA_SIZE = len(LA_SPIKE_CANON)
+#12/2/21 this matches reported Mu spike protein QZW69948.1
+MU_SPIKE_CANON = MU_LIST[8]['SEQB']
+MU_AA_SIZE = len(MU_SPIKE_CANON)
+#12/2/21 - this matches reporteded Omicron spike protein UFO69279.1
+OM_SPIKE_CANON = OM_LIST[8]['SEQB']
+OM_AA_SIZE = len(OM_SPIKE_CANON)
 
-#LA_AA_SIZE == CN_AA_SIZE which is < VAX_AA_SIZE so use that for Identity Score
-
-PFIZER_vs_CN_SCORE = pairwise2.align.globalxx(PFIZER_SPIKE,CN_SPIKE_CANON,one_alignment_only=True,score_only=True)
-PFIZER_vs_LA_SCORE = pairwise2.align.globalxx(PFIZER_SPIKE,LA_SPIKE_CANON,one_alignment_only=True,score_only=True)
-
-VAX_vs_CN_IDENT = (PFIZER_vs_CN_SCORE/CN_AA_SIZE)*100
-VAX_vs_LA_IDENT = (PFIZER_vs_LA_SCORE/LA_AA_SIZE)*100
-
-print('The Pfizer spike is ',str(round(VAX_vs_CN_IDENT,4)),'% identical to Alpha Spike')
-print('***\n')
-print('The Pfizer spike is ',str(round(VAX_vs_LA_IDENT,4)),'% identical to Delta Spike')
-print('***\n')
-#leave these as 'bespoke' 8/11/21
-
-#perform display function
-print('COVID19 Spike Protein:')
-DISPLAY_PROTEIN_COMPARISON(DELTA_LIST,10,['COVID19 ALPHA SPIKE','COVID19 DELTA SPIKE'],'global')
-print('***\n')
+VAX_DRIFT_REPORT(PFIZER_SPIKE,CN_SPIKE_CANON,'Alpha',3)
+VAX_DRIFT_REPORT(PFIZER_SPIKE,LA_SPIKE_CANON,'Delta',3)
+VAX_DRIFT_REPORT(PFIZER_SPIKE,MU_SPIKE_CANON,'Mu',3)
+VAX_DRIFT_REPORT(PFIZER_SPIKE,OM_SPIKE_CANON,'Omicron',3)
