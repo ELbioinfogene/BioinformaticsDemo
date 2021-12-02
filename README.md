@@ -1,9 +1,9 @@
 # BioinformaticsDemo
-Independent study from a uDemy bioinformatics course, this script uses Biopython functions to analyze SARSCOV2 genomes
+Independent study from a uDemy bioinformatics course, this script uses Biopython functions to analyze SARS-COV2 genomes
 
 With Biopython dependences some 'general use' functions are defined here: Protein_Estimator() and CODON_READER() - which can create potential amino acids sequences from any given nucleotide sequence.
 
-In this script Protein_Estimator() creates potential protein candidates from the spike gene segment of the SARSCOV2 genomes. Each set of variant spike Amino Acid sequences is then compared to the alpha spike sequences using PROTEIN_COMPARER(). Outputs were validated by BLASTing manually:
+In this script Protein_Estimator() creates potential protein candidates from the spike gene segment of each SARS-COV2 genomes. Each set of variant spike Amino Acid sequences is then compared to the alpha spike sequences using PROTEIN_COMPARER(). Outputs were validated by BLASTing manually:
 
 DELTA_LIST[10]['SEQA'] corresponds to NCBI YP_009724390.1
 
