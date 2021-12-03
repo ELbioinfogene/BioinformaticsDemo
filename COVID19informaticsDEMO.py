@@ -175,6 +175,25 @@ def VAX_DRIFT_REPORT(VAX_SPIKE,QUERY_SPIKE,QUERY_NAME,SIG_FIGS):
     print(f'The Pfizer mRNA spike protein is {ROUND_OFF_PERCENT}% identical to {QUERY_NAME} variant spike protein')
     print('***\n')
 
+def PROT_DRIFT_REPORT(PROTEIN_A,PROTEIN_B,NAME_LIST,SIG_FIGS):
+    #which is longer?
+    A_SIZE = len(PROTEIN_A)
+    B_SIZE = len(PROTEIN_B)
+    if A_SIZE>B_SIZE:
+        SIZE_NORM = A_SIZE
+    if B_SIZE>A_SIZE:
+        SIZE_NORM = B_SIZE
+    if A_SIZE==B_SIZE:
+        SIZE_NORM = A_SIZE
+    PAIRWISE_SCORE = pairwise2.align.globalxx(PROTEIN_A,PROTEIN_B,one_alignment_only=True,score_only=True)
+    IDENTITY_PERCENT = (PAIRWISE_SCORE/SIZE_NORM)*100
+    ROUND_OFF_PERCENT = round(IDENTITY_PERCENT,SIG_FIGS)
+    A_NAME = NAME_LIST[0]
+    B_NAME = NAME_LIST[1]
+    PROT_NAME = NAME_LIST[2]
+    print(f'The {PROT_NAME} AA sequence of {B_NAME} variant is {ROUND_OFF_PERCENT}% identical to the {A_NAME} variant.')
+    print('===\n')
+
 #END OF FUNCTIONS
 
 #Function Execution
@@ -188,9 +207,8 @@ DELTA_LIST = PROTEIN_COMPARER(CN_PROTEINS,LA_PROTEINS,100)
 MU_LIST = PROTEIN_COMPARER(CN_PROTEINS,FL_PROTEINS,100)
 OM_LIST = PROTEIN_COMPARER(CN_PROTEINS,OM_PROTEINS,100)
 
-#perform display function for delta variant result
-DISPLAY_PROTEIN_COMPARISON(DELTA_LIST,10,['COVID19 ALPHA SPIKE','COVID19 DELTA SPIKE'],'global')
-print('***\n')
+#stop using this function for now in favor of PROT_DRIFT_REPORT()
+#DISPLAY_PROTEIN_COMPARISON(DELTA_LIST,10,['COVID19 ALPHA SPIKE','COVID19 DELTA SPIKE'],'global')
 
 #Analyze VAX target mutations
 #Pfizer Sequence from WHO
@@ -212,7 +230,125 @@ MU_AA_SIZE = len(MU_SPIKE_CANON)
 OM_SPIKE_CANON = OM_LIST[8]['SEQB']
 OM_AA_SIZE = len(OM_SPIKE_CANON)
 
+#report Spike protein changes
+PROT_DRIFT_REPORT(CN_SPIKE_CANON,LA_SPIKE_CANON,['Alpha','Delta','Spike'],3)
+PROT_DRIFT_REPORT(CN_SPIKE_CANON,OM_SPIKE_CANON,['Alpha','Omicron','Spike'],3)
+
 VAX_DRIFT_REPORT(PFIZER_SPIKE,CN_SPIKE_CANON,'Alpha',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,LA_SPIKE_CANON,'Delta',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,MU_SPIKE_CANON,'Mu',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,OM_SPIKE_CANON,'Omicron',3)
+print('---')
+
+#Look at genes besides the spike (not targeted by Vaccine, role not as well studied)
+print('Analyzing other Viral proteins...\n===')
+#source: https://www.ncbi.nlm.nih.gov/gene/?term=NC_045512
+
+#Isolate gene sequences:
+#ORF1ab - this is the largest reading frame
+#do not try to get protein candidates just yet
+ALPH_ORF1_GENE = CN_COVID_NT[200:22000]
+DELT_ORF1_GENE = LA_COVID_NT[200:22000]
+OMIC_ORF1_GENE = OM_COVID_NT[200:22000]
+
+#ORF3a
+ALPH_ORF3_GENE = CN_COVID_NT[25300:26500]
+DELT_ORF3_GENE = LA_COVID_NT[25300:26500]
+OMIC_ORF3_GENE = OM_COVID_NT[25300:26500]
+
+#Envelope
+ALPH_ENVELOPE_GENE = CN_COVID_NT[26000:26500]
+DELT_ENVELOPE_GENE = LA_COVID_NT[26000:26500]
+OMIC_ENVELOPE_GENE = OM_COVID_NT[26000:26500]
+
+#Membrane
+ALPH_MEMBRANE_GENE = CN_COVID_NT[26000:27200]
+DELT_MEMBRANE_GENE = LA_COVID_NT[26000:27200]
+OMIC_MEMBRANE_GENE = OM_COVID_NT[26000:27200]
+
+#Nucleocapsid
+ALPH_NUCLEO_GENE = CN_COVID_NT[28000:29600]
+DELT_NUCLEO_GENE = LA_COVID_NT[28000:29600]
+OMIC_NUCLEO_GENE = OM_COVID_NT[28000:29600]
+
+#ORF6
+ALPH_ORF6_GENE = CN_COVID_NT[27200:27400]
+DELT_ORF6_GENE = LA_COVID_NT[27200:27400]
+OMIC_ORF6_GENE = OM_COVID_NT[27200:27400]
+
+#ORF7
+ALPH_ORF7_GENE = CN_COVID_NT[27350:27800]
+DELT_ORF7_GENE = LA_COVID_NT[27350:27800]
+OMIC_ORF7_GENE = OM_COVID_NT[27350:27800]
+
+#ORF10 - this is the 'tail' of the genome
+ALPH_ORF10_GENE = CN_COVID_NT[29500::]
+DELT_ORF10_GENE = LA_COVID_NT[29500::]
+OMIC_ORF10_GENE = OM_COVID_NT[29500::]
+#End of gene collection
+
+#Produce protein candidates and look at mutations in the 'true' AA seqs:
+#membrane protein
+ALPH_MEMBRANE_AAs = Protein_Estimator(ALPH_MEMBRANE_GENE)
+DELT_MEMBRANE_AAs = Protein_Estimator(DELT_MEMBRANE_GENE)
+OMIC_MEMBRANE_AAs = Protein_Estimator(OMIC_MEMBRANE_GENE)
+#Isolate canon versions (manually checked NCBI)
+ALPH_MEMBRANE_PROTEIN = ALPH_MEMBRANE_AAs[8]
+DELT_MEMBRANE_PROTEIN = DELT_MEMBRANE_AAs[8]
+OMIC_MEMBRANE_PROTEIN = OMIC_MEMBRANE_AAs[7]
+#report results
+PROT_DRIFT_REPORT(ALPH_MEMBRANE_PROTEIN,DELT_MEMBRANE_PROTEIN,['Alpha','Delta','Membrane'],3)
+PROT_DRIFT_REPORT(ALPH_MEMBRANE_PROTEIN,OMIC_MEMBRANE_PROTEIN,['Alpha','Omicron','Membrane'],3)
+
+#NucleoCapsid protein
+ALPH_NUCLEO_AAs = Protein_Estimator(ALPH_NUCLEO_GENE)
+DELT_NUCLEO_AAs = Protein_Estimator(DELT_NUCLEO_GENE)
+OMIC_NUCLEO_AAs = Protein_Estimator(OMIC_NUCLEO_GENE)
+#Isolate canon versions (manually checked NCBI)
+ALPH_NUCLEO_PROTEIN = ALPH_NUCLEO_AAs[4]
+DELT_NUCLEO_PROTEIN = DELT_NUCLEO_AAs[4]
+OMIC_NUCLEO_PROTEIN = OMIC_NUCLEO_AAs[3]
+#report results
+PROT_DRIFT_REPORT(ALPH_NUCLEO_PROTEIN,DELT_NUCLEO_PROTEIN,['Alpha','Delta','Nucleocapsid'],3)
+PROT_DRIFT_REPORT(ALPH_NUCLEO_PROTEIN,OMIC_NUCLEO_PROTEIN,['Alpha','Omicron','Nucleocapsid'],3)
+
+#Envelope protein
+ALPH_ENV_AAs = Protein_Estimator(ALPH_ENVELOPE_GENE)
+DELT_ENV_AAs = Protein_Estimator(DELT_ENVELOPE_GENE)
+OMIC_ENV_AAs = Protein_Estimator(OMIC_ENVELOPE_GENE)
+#Isolate canon versions (manually checked NCBI)
+ALPH_ENV_PROTEIN = ALPH_ENV_AAs[-1]
+DELT_ENV_PROTEIN = DELT_ENV_AAs[-1]
+OMIC_ENV_PROTEIN = OMIC_ENV_AAs[-1]
+#report results
+PROT_DRIFT_REPORT(ALPH_ENV_PROTEIN,DELT_ENV_PROTEIN,['Alpha','Delta','Envelope'],3)
+PROT_DRIFT_REPORT(ALPH_ENV_PROTEIN,OMIC_ENV_PROTEIN,['Alpha','Omicron','Envelope'],3)
+
+#ORF3
+ALPH_ORF3_AAs = Protein_Estimator(ALPH_ORF3_GENE)
+DELT_ORF3_AAs = Protein_Estimator(DELT_ORF3_GENE)
+OMIC_ORF3_AAs = Protein_Estimator(OMIC_ORF3_GENE)
+#Isolate canon versions (manually checked NCBI)
+ALPH_ORF3_PROTEIN = ALPH_ORF3_AAs[1]
+DELT_ORF3_PROTEIN = DELT_ORF3_AAs[1]
+OMIC_ORF3_PROTEIN = OMIC_ORF3_AAs[0]
+#report results
+PROT_DRIFT_REPORT(ALPH_ORF3_PROTEIN,DELT_ORF3_PROTEIN,['Alpha','Delta','ORF3'],3)
+PROT_DRIFT_REPORT(ALPH_ORF3_PROTEIN,OMIC_ORF3_PROTEIN,['Alpha','Omicron','ORF3'],3)
+
+#ORF1 - this can be SLOW
+ALPH_ORF1_AAs = Protein_Estimator(ALPH_ORF1_GENE)
+DELT_ORF1_AAs = Protein_Estimator(DELT_ORF1_GENE)
+OMIC_ORF1_AAs = Protein_Estimator(OMIC_ORF1_GENE)
+#Isolate canon versions (manually checked NCBI)
+#Note - this is N terminus part, some splicing
+#   or 'ribosomal slippage' occurs during translation
+#   Documented Alpha is 'MESL...VNN'
+#   while documented Delta & Omicron are 'MESL...FAV'
+#   did a truncation occur?
+ALPH_ORF1_PROTEIN = ALPH_ORF1_AAs[0]
+DELT_ORF1_PROTEIN = DELT_ORF1_AAs[0]
+OMIC_ORF1_PROTEIN = OMIC_ORF1_AAs[0]
+#report results
+PROT_DRIFT_REPORT(ALPH_ORF1_PROTEIN,DELT_ORF1_PROTEIN,['Alpha','Delta','ORF1 N terminus'],3)
+PROT_DRIFT_REPORT(ALPH_ORF1_PROTEIN,OMIC_ORF1_PROTEIN,['Alpha','Omicron','ORF1 N terminus'],3)
