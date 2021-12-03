@@ -238,15 +238,15 @@ VAX_DRIFT_REPORT(PFIZER_SPIKE,CN_SPIKE_CANON,'Alpha',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,LA_SPIKE_CANON,'Delta',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,MU_SPIKE_CANON,'Mu',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,OM_SPIKE_CANON,'Omicron',3)
-print('---')
 
-#Look at genes besides the spike (not targeted by Vaccine, role not as well studied)
-print('Analyzing other Viral proteins...\n===')
+#Look at genes besides the spike
+#(not targeted by Vaccine, significance even less understood)
 #source: https://www.ncbi.nlm.nih.gov/gene/?term=NC_045512
+print('Analyzing other Viral proteins...\n~~~~')
 
 #Isolate gene sequences:
 #ORF1ab - this is the largest reading frame
-#do not try to get protein candidates just yet
+#always run Protein_Estimator() on this LAST as it will be SLOW
 ALPH_ORF1_GENE = CN_COVID_NT[200:22000]
 DELT_ORF1_GENE = LA_COVID_NT[200:22000]
 OMIC_ORF1_GENE = OM_COVID_NT[200:22000]
