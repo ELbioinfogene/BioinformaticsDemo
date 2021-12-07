@@ -1,5 +1,5 @@
 # BioinformaticsDemo
-Independent study from a uDemy bioinformatics course, this script uses Biopython functions to analyze SARS-COV2 genomes
+Independent study from a uDemy bioinformatics course, these scripts uses Biopython functions to analyze SARS-COV2 genomes
 
 With Biopython dependences some 'general use' functions are defined in COVID19informaticsDEMO.py: Protein_Estimator() and CODON_READER() - which can create potential amino acids sequences from any given nucleotide sequence.
 
