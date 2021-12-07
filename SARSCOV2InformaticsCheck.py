@@ -110,7 +110,6 @@ DELTA_GENES=PARSE_SARS_2_GENOME(DELTA_COVID_record)
 MU_COVID_record = SeqIO.read('biopythonSARSCOV2MaybeMuV.fasta', 'fasta')
 '''NOTES:
     Spike GlycoProtein: point mutations and a 6 BP deletion in the high 900s
-        An NGG is upstream of the 6 BP deletion, but that is nothing suspect
     ~~~
     Envelope: Identical to ALPHA
     Membrane: single point mutation at 731
@@ -128,13 +127,10 @@ OMICRON_COVID_record = SeqIO.read('biopythonSARSCOV2OMICRON.fasta', 'fasta')
     Spike GlycoProtein: MANY point mutations - including a Double Nucleotide Change
         2 deletion regions - one in the 600s and another around 900
         !An INDEL region around 1100!
-        !Both deletions and the INDEL have CCN motifs upsteam and NGG downstream!
     ~~~
-    Envelope: SINGLE POINT MUTATION AT 195 - !btwn a CGG and an AGG!
+    Envelope: SINGLE POINT MUTATION AT 195
     Membrane: MULTIPLE POINT MUTATIONS
-        !ALL OF THEM ARE Cas9 PAM ADJACENT!
     Nucleocapsid: alt codon? at 797 shared with DELTA
-        !9 BP DELETION in PAM ENRICHED REGION!
         '''
 OMICRON_GENES=PARSE_SARS_2_GENOME(OMICRON_COVID_record)
 #Conclusion - THIS IS CAUSE FOR CONCERN
@@ -187,7 +183,6 @@ OTHER4_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_4.fasta', 'fasta
 '''NOTES:
     Spike GlycoProtein: Single point mutations - most in common with DELTA
         2 deletion sites: one is 6 BP around 756, the other is 3 BP around 980
-        !BOTH ARE IN CCN and NGG enriched areas!
     ~~~
     Envelope: Identical to ALPHA
     Membrane: Identical to ALPHA
