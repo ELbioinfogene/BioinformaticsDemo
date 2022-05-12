@@ -190,6 +190,76 @@ OTHER4_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_4.fasta', 'fasta
 OTHER4_GENES=PARSE_SARS_2_GENOME(OTHER4_COVID_record)
 #evidence of active recombination
 
+'''MZ372258
+    Collected: May 2021
+    Location:Illinois USA'''
+OTHER5_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_5.fasta', 'fasta')
+'''Earlier Sample of Omicron PangoLineage'''
+OTHER5_GENES=PARSE_SARS_2_GENOME(OTHER5_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER5_GENES,'ADDTL5')
+
+#5/12/2022 ADDITIONAL IMPACT - masking returns
+#look at newer samples
+'''ON464308.1
+    Collected: April 2022
+    Location:Colorado USA'''
+OTHER6_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_6.fasta', 'fasta')
+OTHER6_GENES=PARSE_SARS_2_GENOME(OTHER6_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER6_GENES,'ADDTL6')
+#5/12/2022 - similar to ON480325
+
+'''ON495673
+    Collected: January 2022
+    Location: Pennsylvania USA'''
+OTHER7_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_7.fasta', 'fasta')
+OTHER7_GENES=PARSE_SARS_2_GENOME(OTHER7_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER7_GENES,'ADDTL7')
+#5/12/2022 - spike is very similar to omicron (drops a large insert?)
+#other genes match omicron (not surprising)
+
+'''ON480325
+    Collected: February 2022
+    Location: New Jersey USA'''
+OTHER8_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_8.fasta', 'fasta')
+OTHER8_GENES=PARSE_SARS_2_GENOME(OTHER8_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER8_GENES,'ADDTL8')
+#5/12/2022 - spike has many features in common with omicron but some alpha recomb?
+#membrane shows similar recomb, nucleocapsid is omicron + a SNP
+#envelope is omicron
+#this seems to be the 'new strain' that is spreading now
+
+'''ON481333
+    Collected: April 2022
+    Location: Florida USA'''
+OTHER9_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_9.fasta', 'fasta')
+OTHER9_GENES=PARSE_SARS_2_GENOME(OTHER9_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER9_GENES,'ADDTL9')
+#5/12/2022 - similar to ON480325
+
+'''ON481762
+    Collected: May 2022
+    Location: California USA'''
+OTHER10_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_10.fasta', 'fasta')
+OTHER10_GENES=PARSE_SARS_2_GENOME(OTHER10_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER10_GENES,'ADDTL10')
+#5/12/2022 - similar to ON480325
+
+'''ON481750
+    Collected: May 2022
+    Location: New Hampshire USA'''
+OTHER11_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_11.fasta', 'fasta')
+OTHER11_GENES=PARSE_SARS_2_GENOME(OTHER11_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER11_GENES,'ADDTL11')
+#5/12/2022 - similar to ON480325
+
+'''ON481757
+    Collected: May 2022
+    Location: Michigan USA'''
+OTHER12_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_12.fasta', 'fasta')
+OTHER12_GENES=PARSE_SARS_2_GENOME(OTHER12_COVID_record)
+#OUTPUT_GENE_FASTAS(OTHER12_GENES,'ADDTL12')
+#5/12/2022 - similar to ON480325
+
 '''
 #Output all genes to .FASTA files for offline alignment in ApE
 print('Writing Genes to files...')
@@ -201,4 +271,5 @@ OUTPUT_GENE_FASTAS(OTHER1_GENES,'ADDTL1')
 OUTPUT_GENE_FASTAS(OTHER2_GENES,'ADDTL2')
 OUTPUT_GENE_FASTAS(OTHER3_GENES,'ADDTL3')
 OUTPUT_GENE_FASTAS(OTHER4_GENES,'ADDTL4')
-print('..Done!')'''
+print('..Done!')
+'''
