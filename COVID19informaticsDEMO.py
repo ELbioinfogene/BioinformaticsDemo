@@ -32,6 +32,12 @@ OM_COVID_record = SeqIO.read('biopythonSARSCOV2OMICRON.fasta', 'fasta')
 OM_COVID_NT = OM_COVID_record.seq
 #isolate spike gene - wider window!
 OM_SPIKE_GENE = OM_COVID_NT[21000:26000]
+
+#load 'OMICRONb' - New Jersey sample
+OMb_COVID_record = SeqIO.read('biopythonSARSCOV2SUPPLEMENTAL_8.fasta', 'fasta')
+OMb_COVID_NT = OMb_COVID_record.seq
+#isolate spike gene - wider window!
+OMb_SPIKE_GENE = OMb_COVID_NT[21000:26000]
 #end File Loading
 
 #FUNCTIONS:
@@ -202,10 +208,12 @@ CN_PROTEINS = Protein_Estimator(CN_SPIKE_GENE)
 LA_PROTEINS = Protein_Estimator(LA_SPIKE_GENE)
 FL_PROTEINS = Protein_Estimator(FL_SPIKE_GENE)
 OM_PROTEINS = Protein_Estimator(OM_SPIKE_GENE)
+OMb_PROTEINS = Protein_Estimator(OMb_SPIKE_GENE)
 #Compare unique proteins of similar length - allows user to select a cull threshold
 DELTA_LIST = PROTEIN_COMPARER(CN_PROTEINS,LA_PROTEINS,100)
 MU_LIST = PROTEIN_COMPARER(CN_PROTEINS,FL_PROTEINS,100)
 OM_LIST = PROTEIN_COMPARER(CN_PROTEINS,OM_PROTEINS,100)
+OMb_LIST = PROTEIN_COMPARER(CN_PROTEINS,OMb_PROTEINS,100)
 
 #stop using this function for now in favor of PROT_DRIFT_REPORT()
 #DISPLAY_PROTEIN_COMPARISON(DELTA_LIST,10,['COVID19 ALPHA SPIKE','COVID19 DELTA SPIKE'],'global')
@@ -229,15 +237,20 @@ MU_AA_SIZE = len(MU_SPIKE_CANON)
 #12/2/21 - this matches reporteded Omicron spike protein UFO69279.1
 OM_SPIKE_CANON = OM_LIST[8]['SEQB']
 OM_AA_SIZE = len(OM_SPIKE_CANON)
+#5/12/2022 - this matches reported Omicron 'b' spike protein UQI51632.1
+OMb_SPIKE_CANON = OMb_LIST[10]['SEQB']
+OMb_AA_SIZE = len(OMb_SPIKE_CANON)
 
 #report Spike protein changes
 PROT_DRIFT_REPORT(CN_SPIKE_CANON,LA_SPIKE_CANON,['Alpha','Delta','Spike'],3)
 PROT_DRIFT_REPORT(CN_SPIKE_CANON,OM_SPIKE_CANON,['Alpha','Omicron','Spike'],3)
+PROT_DRIFT_REPORT(CN_SPIKE_CANON,OMb_SPIKE_CANON,['Alpha','Omicron b','Spike'],3)
 
 VAX_DRIFT_REPORT(PFIZER_SPIKE,CN_SPIKE_CANON,'Alpha',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,LA_SPIKE_CANON,'Delta',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,MU_SPIKE_CANON,'Mu',3)
 VAX_DRIFT_REPORT(PFIZER_SPIKE,OM_SPIKE_CANON,'Omicron',3)
+VAX_DRIFT_REPORT(PFIZER_SPIKE,OMb_SPIKE_CANON,'Omicron b',3)
 
 #Look at genes besides the spike
 #(not targeted by Vaccine, significance even less understood)
